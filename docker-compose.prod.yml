@@ -1,0 +1,74 @@
+version: '3'
+
+
+services:
+  nats-server:
+    image: nats:latest
+  
+  client-gateway:
+    build:
+      context: ./client-gateway
+      dockerfile: Dockerfile.prod
+    ports:
+      - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
+    environment:
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVICES_URL=${NATS_SERVICES_URL}
+    image: client-gateway-prod
+
+
+  products-ms:
+    build: 
+      context: ./products-ms
+      dockerfile: Dockerfile.prod
+    image: products-ms-prod
+    environment:
+      - PORT=3000
+      - NATS_SERVICES_URL=${NATS_SERVICES_URL}
+      - DATABASE_URL=file:./dev.db
+  orders-ms:
+    build:
+      context: ./orders-ms
+      dockerfile: Dockerfile.prod
+      args:
+        - ORDERS_DATABASE_URL=${ORDERS_DATABASE_URL}
+    image: orders-ms-prod
+    environment:
+      - PORT=3000
+      - NATS_SERVICES_URL=${NATS_SERVICES_URL}
+      - DATABASE_URL=${ORDERS_DATABASE_URL}
+  # orders-db:
+  #   container_name: 'orders-database'
+  #   image: postgres:14.3
+  #   restart: always
+  #   volumes:
+  #     - ./orders-ms/postgres:/var/lib/postgresql/data
+  #   ports:
+  #     - 5432:5432
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=123456
+  #     - POSTGRES_DB=ordersdb
+  payments-ms:
+    build: 
+      context: ./payments-ms
+      dockerfile: Dockerfile.prod
+    ports:
+      - ${PORT}:${PORT}
+    image: payments-ms-prod
+    environment:
+     - PORT=${PORT}
+     - NATS_SERVICE_URL=${NATS_SERVICES_URL}
+     - STRIPE_SECRET=${STRIPE_SECRET}
+     - CLIENT_URL=${CLIENT_URL}
+     - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+  auth-ms:
+    build: 
+      context: ./auth-ms
+      dockerfile: Dockerfile.prod
+    image: auth-ms-prod
+    environment:
+     - PORT=3000
+     - NATS_SERVICES_URL=${NATS_SERVICES_URL}
+     - DATABASE_URL=${DATABASE_MONGO_URL}
+     - JWT_SECRET=${JWT_SECRET}
