@@ -14,14 +14,14 @@ services:
     environment:
       - PORT=${CLIENT_GATEWAY_PORT}
       - NATS_SERVICES_URL=${NATS_SERVICES_URL}
-    image: client-gateway-prod
+    image: southamerica-east1-docker.pkg.dev/microservices-420211/image-registry/client-gateway-prod
 
 
   products-ms:
     build: 
       context: ./products-ms
       dockerfile: Dockerfile.prod
-    image: products-ms-prod
+    image: southamerica-east1-docker.pkg.dev/microservices-420211/image-registry/products-ms-prod
     environment:
       - PORT=3000
       - NATS_SERVICES_URL=${NATS_SERVICES_URL}
@@ -32,7 +32,7 @@ services:
       dockerfile: Dockerfile.prod
       args:
         - ORDERS_DATABASE_URL=${ORDERS_DATABASE_URL}
-    image: orders-ms-prod
+    image: southamerica-east1-docker.pkg.dev/microservices-420211/image-registry/orders-ms-prod
     environment:
       - PORT=3000
       - NATS_SERVICES_URL=${NATS_SERVICES_URL}
@@ -55,7 +55,7 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - ${PORT}:${PORT}
-    image: payments-ms-prod
+    image: southamerica-east1-docker.pkg.dev/microservices-420211/image-registry/payments-ms-prod
     environment:
      - PORT=${PORT}
      - NATS_SERVICE_URL=${NATS_SERVICES_URL}
@@ -66,7 +66,7 @@ services:
     build: 
       context: ./auth-ms
       dockerfile: Dockerfile.prod
-    image: auth-ms-prod
+    image: southamerica-east1-docker.pkg.dev/microservices-420211/image-registry/auth-ms-prod
     environment:
      - PORT=3000
      - NATS_SERVICES_URL=${NATS_SERVICES_URL}
